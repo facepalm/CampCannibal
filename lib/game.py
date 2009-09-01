@@ -38,7 +38,6 @@ def init():
     window.resize(window.width, window.height)
     
     titles.StartTitleScreens(window);
-    window.clear()
     
     data.loadimages()
     data.loadsounds()
