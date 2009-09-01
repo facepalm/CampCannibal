@@ -9,7 +9,7 @@ from game_map import Map, EffectsManager
 
 #handles the title screens
 import titles
-
+import knEvents
 
 
 '''
@@ -58,6 +58,11 @@ def init():
     effects = EffectsManager()
     map = Map(32, 32, window)
     map.populate()
+    
+    knEvents.FullGameInit(state);
+    pass
+    
+    
 '''
 OpenGL settings, may want to tweak this and or move this else where
 '''
