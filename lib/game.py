@@ -7,6 +7,11 @@ fourfv = ctypes.c_float * 4
 
 from game_map import Map, EffectsManager
 
+#handles the title screens
+import titles
+
+
+
 '''
 Setup global variables such as gamestate, loading pictures, map.
 This is done so you do not have to include map or system in the declaration
@@ -26,11 +31,15 @@ def init():
      
     score =  0
     number_of_bugs = 0
-    window = pyglet.window.Window(resizable=True, visible=False)
+    window = pyglet.window.Window(width=800,height=600, resizable=True, visible=False)
     window.clear()
     window.resize = resize
     window.set_visible(True)
     window.resize(window.width, window.height)
+    
+    titles.StartTitleScreens(window);
+    window.clear()
+    
     data.loadimages()
     data.loadsounds()
     images = data._images
