@@ -1,0 +1,37 @@
+8
+
+dir
+160
+https://campdivisible.googlecode.com/svn/trunk/art/agents
+https://campdivisible.googlecode.com/svn
+
+
+
+2009-04-29T07:25:59.854305Z
+96
+ccbean
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+0e197408-27a5-11de-a7ed-71eef27883a5
+
+bug02
+dir
+
+player
+dir
+
+bug01
+dir
+
