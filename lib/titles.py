@@ -111,9 +111,11 @@ def StartScreen(args):
         knFeatures.RemoveFeature(f);
     titleFeatures = [];
     
-    f = knFeatures.FtreText('''"Far upon the stormy crags of Transylvania, a social outcast explored the shunned craft of reanimating human tissues. One night, his devoted assistant vowed to quell the nearby village for disparaging his master's dream of fully funded, independent research. Unleashed by the vengeful contractor, his master's experiment lumbered out, beyond the castle walls..."''',400,400);
+    f = knFeatures.FtreText('''"Far upon the stormy crags of Transylvania, a social outcast explored the shunned craft of reanimating human tissues. One night, his devoted assistant vowed to quell the nearby village for undermining his master's dream of fully funded, indie R&D. Unleashed by the vengeful contractor, his master's experiment lumbered out,\nbeyond the castle walls..."''',400,400);
     titleFeatures.append(f);
-    f = knFeatures.FtreString("-from 'Tales of our Struggle', Mad Scientist's Quarterly",300,450,fSize=12);
+    f = knFeatures.FtreString("-from 'Tales of our Struggle', Mad Scientist's Quarterly",340,450,fSize=12);
+    titleFeatures.append(f);
+    f = knFeatures.FtreText('''GOAL: KILL EVERY VILLAGER. (In a way that prevents factions of the village from uprising together against the good doctor, until it's too late.)\n\nWhen the creature is killed, you can reanimate it, by day, with parts from the deceased villagers, for another night's rampage.''',250,400);
     titleFeatures.append(f);
 
     f = knFeatures.FtreStrBtn("START", 50, 400);

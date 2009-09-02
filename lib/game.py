@@ -60,7 +60,6 @@ def init():
     effects = EffectsManager()
     map = Map(32, 32, window,64)
     map.populate()
-    factions = faction.FactionManager()
     
     knEvents.FullGameInit(state);
     pass
@@ -97,6 +96,8 @@ class GameState(pyglet.event.EventDispatcher):
         #Set player color
         #State
         self.state = 'Start'        
+        self.factions = faction.FactionManager()
+        pass
                 
 
     def set_player_color(self):

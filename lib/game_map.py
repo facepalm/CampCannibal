@@ -9,6 +9,9 @@ from pyglet.gl import *
 import game
 import random
 import mapgen
+import meters
+
+
 
 class Map(object):
     """
@@ -46,9 +49,10 @@ class Map(object):
         self.bg_geometry = pyglet.graphics.Batch()
         tex = (0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0) * (len(geom)/8)
         self.bg_geometry.add( len(geom)/2, GL_QUADS, None, ('v2f', geom), ('t2f' ,tex))
-        score_text = "score: " + str(game.score) 
-        self.score = pyglet.text.Label(score_text, color=(200, 0, 0, 255), font_size=15, x = 545, y = 40)
-
+        #score_text = "score: " + str(game.score) 
+        #self.score = pyglet.text.Label(score_text, color=(200, 0, 0, 255), font_size=15, x = 545, y = 40)        
+        meters.Init();
+        pass
         
 
     def on_draw(self):
@@ -66,7 +70,7 @@ class Map(object):
         Bug.bug_batch.draw()
 
         glPopMatrix()
-        score_text = "score: " + str(game.score) 
+        #score_text = "score: " + str(game.score) 
         glLoadIdentity()
         if game.state.state == 'Start':
             #Wait for someone to press s
@@ -75,6 +79,8 @@ class Map(object):
                         x = 180,
                         y = 400)
             start_screen.draw()
+        else:
+            meters.Draw();
  
     def populate(self):   
         '''Fill the map with walls and bugs and stuff.'''

@@ -11,6 +11,13 @@ STR_SIGMA = 0.05 #std dev of str
 
 ANGER_PER_POP_PERCENT = 1 #anger % gained per pop % lost
 
+FACTION_COLORS = [  (150,050,050,100),(050,050,150,100), #IMPORTANT: change these to match hat colors.
+                    (150,050,150,100),(255,050,150,100),
+                    (150,050,255,100),(150,055,150,100)   ];
+#random.shuffle(FACTION_COLORS);
+
+
+
 class Faction():
     '''An independent group of people in the city'''
     def __init__(self, pop=0):
@@ -19,6 +26,7 @@ class Faction():
         self.strength = random.gauss(STR_MU,STR_SIGMA)
         self.fresh_dead = 0
         self.change_in_anger_level = 0.0
+        self.color = FACTION_COLORS.pop(0);
 
     @property 
     def perc_dead(self):

@@ -5,6 +5,11 @@
     # add labels to organ slots in monster chest cavity
     # replace instruction line with warning about aging organs.
         #generic tips list
+    #add organ aging
+    #8 point "art by Miriam Sherry"
+
+#creep
+    #squashing and stretching organs when in body.
     
     
     
@@ -16,6 +21,9 @@ import knImages
 import knEvents
 import knTimers
 import knFonts
+
+
+healthPerBonus = 5;
 
 organsInLab = [("heart",0,'H'),("lungs",0,'S'),("lungs",1,'H'),
                 ("liver",0,'T'),("kidneys",1,'T')];
@@ -229,7 +237,7 @@ def AddOrgan(partName,bonus,bin):
 
 def CalcBonus(attr,bonus):
     #calc
-    if (attr == 'H'): bonus *= 5;
+    if (attr == 'H'): bonus *= healthPerBonus;
     monsterAttrs[attr] += bonus;
     
     #update string
@@ -244,7 +252,7 @@ def RandPosInBin(bin):
 def BonusImage(f,bonus):
     if (bonus == 0): return None;
     
-    if (f.bin == 'H'): bonus *= 5;
+    if (f.bin == 'H'): bonus *= healthPerBonus;
     render = knFonts.RenderStr('+' + str(bonus), size=18, font='Arial Bold');
     return render;
     
