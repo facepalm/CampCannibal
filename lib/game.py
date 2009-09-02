@@ -3,6 +3,7 @@ from pyglet.gl import *
 from creatures import Bug, Spawn
 import data
 import ctypes
+import faction
 fourfv = ctypes.c_float * 4
 
 from game_map import Map, EffectsManager
@@ -28,6 +29,7 @@ def init():
     global image_map
     global sounds
     global effects
+    global factions
      
     score =  0
     number_of_bugs = 0
@@ -58,6 +60,7 @@ def init():
     effects = EffectsManager()
     map = Map(32, 32, window,64)
     map.populate()
+    factions = faction.FactionManager()
     
     knEvents.FullGameInit(state);
     pass

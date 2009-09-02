@@ -21,6 +21,7 @@ class Spawn():
           'Wall'    : Wall,
           'Bug'     : Bug,
           'Player'  : Player,
+          'Frank'   : Frank,
           }
 
         self.color_map = {
@@ -105,7 +106,9 @@ class Spawn():
             self.set_player_color(game.state)
             tile.contents.append(u)#add the object to the tile
         elif spawn_what == 'Wall':
-            x, y = tile.position
+            u=unit_class(tile=tile) #make a unit of that class
+            tile.contents.append(u)#add the object to the tile
+        elif spawn_what == 'Frank':
             u=unit_class(tile=tile) #make a unit of that class
             tile.contents.append(u)#add the object to the tile
 
@@ -576,6 +579,45 @@ class Player(Bug):
         self.sprite.color = player_color
         print "change player color to:  ", player_color, " current stored p value ", self.sprite.color
 
+    def draw_death(self):
+        game.effects.draw_splat(self.spritex, self.spritey, color=(255, 0, 0))
+
+    #def die(self):
+        #super(Player, self).die()
+        #x, y = self.tile.position        
+        #game.effects.draw_splat(x*32+16, y*32+16)
+        
+    def deathsound(self):
+        mp = game.sounds['playerdie.wav'].play()
+        mp.pitch += random.gauss(0.1, 0.2)
+
+    def get_images(self):
+        return game.image_map['Player']
+
+class Frank(Bug):
+    def __init__(self, *args, **kwargs):#centerx, centery, width, height, tile=None, color=None, direction = 1, velocity = 1):
+        super(Frank, self).__init__(*args, **kwargs)
+        self.move_x=0
+        self.move_y=0
+        self.speed = 4
+        self.state = self.STOPPED
+        #self.sprite.color = color#(0, 0, 0)
+        if self.color:
+                #print "set color p"
+                self.sprite.color   = self.color
+
+
+    def collide_neighbors(self):
+        collidables = []
+        map(lambda x: collidables.extend(x.contents), self.tile.neighbors())
+        collidables = [i for i in collidables if not (isinstance(i, Wall) or isinstance(i, Door) or isinstance(i, Player) or isinstance(i, Portal))] #This needs to be refactored -htormey
+        for c in collidables:
+            if ((self.left >= c.left and self.left < c.right) or (self.right > c.left and self.right <= c.right)) and \
+                ((self.top > c.bottom and self.top <= c.top) or (self.bottom < c.top and self.bottom >= c.bottom)):
+                    self.resolve_collision(c)
+                    #print 'player collided', c
+        
+    
     def draw_death(self):
         game.effects.draw_splat(self.spritex, self.spritey, color=(255, 0, 0))
 
