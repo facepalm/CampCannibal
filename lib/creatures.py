@@ -481,32 +481,6 @@ class Portal(Creature):
         return False
 
 
-class Hud(object):
-    '''Display colors of bugs player can currently kill'''
-    hud_batch = pyglet.graphics.Batch()
-
-    def __init__(self, x=570, y=20):
-        self.images                 = game.image_map['Bug']
-        self.x                      = x
-        self.y                      = y
-        self.color_1_sprite         = pyglet.sprite.Sprite(self.images[0], 0, 0, batch=self.hud_batch)
-        self.color_1_sprite.x       = self.x
-        self.color_1_sprite.y       = self.y
-        #self.color_1_sprite.color   = (255, 255,0)
-        self.color_2_sprite         = pyglet.sprite.Sprite(self.images[0], 0, 0, batch=self.hud_batch)
-        self.color_2_sprite.x       = self.x + 48
-        self.color_2_sprite.y       = self.y
-        #self.color_2_sprite.color   = (255, 0,0)
-        game.state.add_handler(self)
-
-
-    def on_set_player_color(self, player_color, color1, color2):
-        '''Change color to represent bugs you can kill. When you have the key bug. Should display text KEY above correct bug'''
-        #print "change ", color1, " and", color2
-        self.color_1_sprite.color = color1
-        self.color_2_sprite.color = color2
-
-        
 class Player(Bug):
     def __init__(self, *args, **kwargs):#centerx, centery, width, height, tile=None, color=None, direction = 1, velocity = 1):
         super(Player, self).__init__(*args, **kwargs)

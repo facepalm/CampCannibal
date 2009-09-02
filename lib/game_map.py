@@ -4,7 +4,7 @@ Map object
 
 import data
 import pyglet
-from creatures import Bug, Hud
+from creatures import Bug
 from pyglet.gl import *
 import game
 import random
@@ -29,10 +29,10 @@ class Map(object):
         self.center_target = (0, 0)
         self.grid = [[Tile( (x, y), self) for y in range(height)] for x in range(width)]
         game.state.add_handler(self)
-        
+
         #Set up tiled background
         self.background = game.image_map['Map'][0].get_texture()
-        
+
         x_size = self.width * tilesize
         y_size = self.height * tilesize
 
@@ -43,13 +43,10 @@ class Map(object):
 
         self.bg_geometry = pyglet.graphics.Batch()
         tex = (0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0) * (len(geom)/8)
-        #self.bg_geometry = pyglet.graphics.vertex_list( len(geom)/2, ('v2f', geom), ('t2f' ,tex))
         self.bg_geometry.add( len(geom)/2, GL_QUADS, None, ('v2f', geom), ('t2f' ,tex))
         score_text = "score: " + str(game.score) 
         self.score = pyglet.text.Label(score_text, color=(200, 0, 0, 255), font_size=15, x = 545, y = 40)
-        #self.fps = pyglet.clock.ClockDisplay()
-        self.hud = Hud()            
-        
+
     def on_draw(self):
         glColor3f(1.0, 1.0, 1.0)
         glPushMatrix() 
@@ -57,20 +54,16 @@ class Map(object):
         glTranslatef(x_off, y_off, 0)
         glBindTexture(self.background.target, self.background.id)
         glEnable(self.background.target)
-        self.bg_geometry.draw()#GL_QUADS)
+        self.bg_geometry.draw()
         glDisable(self.background.target)
 
         Tile.tile_batch.draw()
-        EffectsManager.effects_batch.draw()        
+        EffectsManager.effects_batch.draw()
         Bug.bug_batch.draw()
-            
+
         glPopMatrix()
         score_text = "score: " + str(game.score) 
-        self.score.text = score_text
-        self.score.draw() 
-        #self.fps.draw()
         glLoadIdentity()
-        self.hud.hud_batch.draw()
         if game.state.state == 'Start':
             #Wait for someone to press s
             start_screen = pyglet.text.Label("Press S to start", color=(0, 200, 0, 255), 
@@ -86,7 +79,7 @@ class Map(object):
         for y in range(self.width):
             for x in range(self.height):
                 self.process_tile(self.grid[x][y],self.mapgrid.grid[x][y].char) #the parser should do this now
-         
+
     def process_tile(self, tile,symbol):
         if symbol=='#': #wall symbol
             game.state.dispatch_event('on_spawn', 'Wall', tile)#spawn wall
@@ -99,10 +92,10 @@ class Map(object):
             game.state.dispatch_event('on_spawn', 'Door', tile)#spawn door
         elif symbol=='p' : #portal
             game.state.dispatch_event('on_spawn', 'Portal', tile)#spawn Portal
-    
+
     def random_tile(self):
         return self.grid[random.randint(0, self.width-1)][random.randint(0, self.height-1)]
-           
+
     def on_key_press(self, *args):
         symbol, mods = args
         if mods & pyglet.window.key.MOD_SHIFT:
@@ -115,17 +108,17 @@ class Map(object):
                 scroll_x, scroll_y = self.scroll_dir
                 scroll_y = -8
                 self.scroll_dir = (scroll_x, scroll_y)
-                self.center_target = (0, 0)                
+                self.center_target = (0, 0)
             if symbol == pyglet.window.key.MOTION_LEFT:
                 scroll_x, scroll_y = self.scroll_dir
                 scroll_x = -8
                 self.scroll_dir = (scroll_x, scroll_y)
-                self.center_target = (0, 0)                
+                self.center_target = (0, 0)
             if symbol == pyglet.window.key.MOTION_RIGHT:
                 scroll_x, scroll_y = self.scroll_dir
                 scroll_x = 8
                 self.scroll_dir = (scroll_x, scroll_y)
-                self.center_target = (0, 0)                
+                self.center_target = (0, 0)
 
     def on_key_release(self, *args):
         symbol, mods = args
@@ -138,12 +131,12 @@ class Map(object):
             if symbol == pyglet.window.key.MOTION_LEFT or symbol == pyglet.window.key.MOTION_RIGHT:
                 scroll_x, scroll_y = self.scroll_dir
                 self.scroll_dir = (0, scroll_y)
-            
+
     def on_update(self, dt):
         scroll_x, scroll_y = self.scroll_dir
         if scroll_x or scroll_y:
             self.scroll(scroll_x, scroll_y)
-        
+
         tx, ty = self.center_target
         ox, oy = self.window_offset
         if tx or ty:
@@ -157,16 +150,14 @@ class Map(object):
             if abs(ty) < 4:
                 ty = 0
             self.center_target = (tx, ty)
-            #print self.center_target
-            
-    
+
     def scroll(self, x, y):
         x_off, y_off = self.window_offset
         w, h = self.window.get_size()
-        
+
         if (x < 0 and x_off - x <= 0) or (x > 0 and x_off - x >= -(self.width * self.tilesize - w)):
             x_off -= x
-                
+
         if (y < 0 and y_off - y <= 0) or (y > 0 and y_off - y >= -(self.height * self.tilesize - h)):
             y_off -= y
 
@@ -174,7 +165,7 @@ class Map(object):
 
     def set_center(self, x, y):
         w, h = self.window.get_size()
-        
+
         ox, oy = self.window_offset
         tx, ty = self.center_target
 
@@ -185,37 +176,36 @@ class Map(object):
         if abs(ty) < 4:
             ty = 0
         self.center_target = (tx, ty)
-        
+
 class Tile(object):
     """Single map tile"""
-    
+
     tile_batch = pyglet.graphics.Batch()
-    
+
     def __init__(self, position, map, background = None):
         self.map = map
         self.position = position
         #Things on this tile
         self.contents = []
-        
+
         if background:
             x, y = self.position
             self.background = pyglet.sprite.Sprite(game.images[background], x*self.map.tilesize, y*self.map.tilesize, batch = self.tile_batch)            
-        
+
     def up(self):
         """Tile above this one"""
         x, y = self.position
         if y == 0:
             return None
         return self.map.grid[x][y-1]
-    
+
     def down(self):
         """Tile below this one"""
         x, y = self.position
         if y == self.map.height - 1:
             return None
         return self.map.grid[x][y+1]
-        
-    
+
     def left(self):
         """Tile left of this one"""
         x, y = self.position
@@ -234,7 +224,7 @@ class Tile(object):
     def neighbors(self):
         """All tiles around this one"""
         neigh=[]
-        bores=[self.up(),self.down(),self.left(),self.right()]        
+        bores=[self.up(),self.down(),self.left(),self.right()]
         for b in bores:
             if b != None:
                 neigh.append(b)
@@ -246,13 +236,13 @@ class Tile(object):
 
 class EffectsManager(object):
     effects_batch = pyglet.graphics.Batch()
-    
+
     def __init__(self):
         self.splats = game.image_map['Splats']
         self.burrow = game.image_map['Burrow'][0]
         self.active_sprites = []
         game.state.add_handler(self)
-        
+
     def draw_splat(self, x, y, color=(255, 0, 0)):
         splat_sprites = [pyglet.sprite.Sprite(self.splats[0], random.gauss(x, 8), random.gauss(y, 8), batch=self.effects_batch) for i in range(8)]
         for sprite in splat_sprites:
@@ -262,10 +252,6 @@ class EffectsManager(object):
             sprite.rotation = random.randint(0, 300)
             sprite.scale = 1.0 - random.gauss(0.0, 0.2)
         self.active_sprites.extend(splat_sprites)
-        #splat_sprite = pyglet.sprite.Sprite(self.splats[0], x, y, batch=self.effects_batch)
-        #splat_sprite.color = color
-        #splat_sprite.time = 0
-        #self.active_sprites.append(splat_sprite)
 
     def draw_burrow(self, tile):
         x, y = tile.position
