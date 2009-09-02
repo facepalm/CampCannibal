@@ -36,6 +36,8 @@ class Map(object):
         x_size = self.width * tilesize
         y_size = self.height * tilesize
 
+        
+
         geom = []
         for x in range(0, x_size, self.background.width):
             for y in range(0, y_size, self.background.height):
@@ -46,6 +48,8 @@ class Map(object):
         self.bg_geometry.add( len(geom)/2, GL_QUADS, None, ('v2f', geom), ('t2f' ,tex))
         score_text = "score: " + str(game.score) 
         self.score = pyglet.text.Label(score_text, color=(200, 0, 0, 255), font_size=15, x = 545, y = 40)
+
+        
 
     def on_draw(self):
         glColor3f(1.0, 1.0, 1.0)
@@ -76,6 +80,7 @@ class Map(object):
         '''Fill the map with walls and bugs and stuff.'''
         #print len(mapstr),len(mapstr[0])
         self.mapgrid=mapgen.mapgen(self.width,self.height)
+        self.mapgrid.print_grid()
         for y in range(self.width):
             for x in range(self.height):
                 self.process_tile(self.grid[x][y],self.mapgrid.grid[x][y].char) #the parser should do this now

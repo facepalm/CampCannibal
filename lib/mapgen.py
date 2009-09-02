@@ -31,27 +31,32 @@ class mapgen():
 
         #exit portal
         exitx=random.choice(range(width/2+1,width-1))
-        self.grid[exitx][0].char='d'
+        self.grid[exitx][0].char='#'
         Walker(self,exitx,0,quad=4,d=3,req_loop=False)
         
         #portal to exit portal
         stg1x=random.choice(range(3*width/4+1,width-1))
-        self.grid[stg1x][self.height/2].char='p'
+        self.grid[stg1x][self.height/2].char='.'
         Walker(self,stg1x,self.height/2,quad=4,d=1,req_loop=False)
         Walker(self,stg1x,self.height/2,quad=3,d=3,req_loop=False)
 
         #portal to portal
         stg2y=random.choice(range(3*height/4+1,height-1))
-        self.grid[self.width/2][stg2y].char='p'
+        self.grid[self.width/2][stg2y].char='.'
         Walker(self,self.width/2,stg2y,quad=3,d=2,req_loop=False)
         Walker(self,self.width/2,stg2y,quad=2,d=0,req_loop=False)
 
         #portal to portal
         stgx=random.choice(range(1,width/4))
-        self.grid[stgx][self.height/2].char='p'
+        self.grid[stgx][self.height/2].char='.'
         Walker(self,stgx,self.height/2,quad=2,d=3,req_loop=False)
         Walker(self,stgx,self.height/2,quad=1,d=1,req_loop=False)
         
+        #portal to portal
+        stgy=random.choice(range(1,3*height/4))
+        self.grid[self.width/2][stgy].char='.'
+        Walker(self,self.width/2,stgy,quad=2,d=3,req_loop=False)
+        Walker(self,self.width/2,stgy,quad=1,d=1,req_loop=False)
         
         for i in range(400):
             for q in [1,2,3,4]:
@@ -67,11 +72,7 @@ class mapgen():
             
         g=self.quad_grid(1)        
         space_tiles=filter(lambda x: x.char == '.',flatten(g))   
-        random.choice(space_tiles).char='@'
-
-        space_tiles=filter(lambda x: x.char == '.',flatten(self.grid)) 
-        for i in range(30):       
-            random.choice(space_tiles).char='b'          
+        random.choice(space_tiles).char='@'        
         
     def quad_grid(self,quad=1):
         '''

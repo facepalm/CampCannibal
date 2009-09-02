@@ -103,6 +103,12 @@ class Spawn():
             u=unit_class(x*32+16, y*32+16, 32, 32, tile=tile, bug_map=self.bug_spawn_map['Color4']) 
             game.state.player=u
             self.set_player_color(game.state)
+            tile.contents.append(u)#add the object to the tile
+        elif spawn_what == 'Wall':
+            x, y = tile.position
+            u=unit_class(0, 0, 32, 32, tile=tile) #make a unit of that class
+            tile.contents.append(u)#add the object to the tile
+
 
 class Creature(object):
     """Sprite-based creature on the map
