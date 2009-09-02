@@ -25,7 +25,7 @@ def Init():
     global gDefaultFont;
     #pyglet.font.add_file('data/fonts/freesansbold.ttf');
     gDefaultFont = "Times New Roman";
-    pyglet.font.load(gDefaultFont);
+    #pyglet.font.load(gDefaultFont);
     pass
 
     

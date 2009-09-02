@@ -124,8 +124,7 @@ def Init(window):
     pass
     
 def FullGameInit(gameState):
-    
-    #gameState.add_handler(HackEventHandling());
+    gameState.push_handlers(HackEventHandling());
     pass
 
 
@@ -177,21 +176,23 @@ def PopKeyBindings():
 
 #--------------------------------------------- integration code - temporary
 
-#import reanimate
-
+import reanimate
+import game
 
 
 class HackEventHandling(object):
     def on_key_release(self, key,mods):
         if (key == pyglet.window.key.R):
-            AsyncTrigger(.2,FakeStartReanimate);
+            FakeStartReanimate();
         pass
 
 
 
-def FakeStartReanimate(args):
+def FakeStartReanimate():
+    mWindow.pop_handlers();
     reanimate.TransitionIn([],None);
     RunWindow();
+    mWindow.push_handlers(game.state);
     pass
     
     

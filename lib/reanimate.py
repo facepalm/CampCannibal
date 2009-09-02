@@ -1,6 +1,14 @@
 
 #reanimate.py
 
+#to do
+    # add labels to organ slots in monster chest cavity
+    # replace instruction line with warning about aging organs.
+        #generic tips list
+    
+    
+    
+
 import random
 
 import knFeatures
@@ -46,7 +54,9 @@ def AnimateOrganPlacement(dt,args,kwargs):
 
                     #organ tuple: (organName, bonus, attribute affected)
 def TransitionIn(organsGathered, monster):
-    #AgeOrgans(); #organs lose one bonus every day. remove organs with bonus < 0.
+    global organsInLab
+    
+    #AgeOrgans(); #unused organs lose one bonus every day. remove organs with bonus < 0.
     organsInLab += organsGathered;
     InitScreen(monster);
     pass
@@ -86,7 +96,8 @@ def InitScreen(monster):
     knFeatures.FtreString("Strength Parts",250,630,fSize=12,fFont='Arial Bold');
     knFeatures.FtreString("Toughness Parts",50,630,fSize=12,fFont='Arial Bold');
     
-    #for organ in organsGathered:
+    for o in organsInLab:
+        AddOrgan(o[0],o[1],o[2]);
     
     #button NEXT NIGHT enables when a full set of organs is in creature.
     knEvents.ScheduleIdle(AnimateOrganPlacement);
@@ -240,15 +251,17 @@ def BonusImage(f,bonus):
     
 def NextNight(f):
     #kill everything!!!
-    global monsterAttrStrs, monsterOrgans, monsterOrganSlots
+    global monsterAttrStrs, monsterOrgans, monsterOrganSlots,organBins
+    
     monsterAttrStrs = {'S':None, 'T':None, 'H':None}; #features
     monsterOrgans = {'lungs':None, 'heart':None, 'liver':None, 'kidneys':None}; #features
     monsterOrganSlots = {'lungs':None, 'heart':None, 'liver':None, 'kidneys':None}; #features
+    organBins = {};
     
     knFeatures.allFeatures = [];
     knFeatures.currentHilite = None;
     
-    knEvent.StopWindowRun();
+    knEvents.StopWindowRun();
     pass
         
 
