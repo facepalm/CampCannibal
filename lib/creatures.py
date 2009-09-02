@@ -100,13 +100,13 @@ class Spawn():
         unit_class = self.spawn_map[spawn_what]#grab the class of the requested object (i.e wall, bug, etc)
         if spawn_what == 'Player':
             x, y = tile.position
-            u=unit_class(x*32+16, y*32+16, 32, 32, tile=tile, bug_map=self.bug_spawn_map['Color4']) 
+            u=unit_class(tile=tile) #make a unit of that class x*32+16, y*32+16, 32, 32, tile=tile, bug_map=self.bug_spawn_map['Color4']) 
             game.state.player=u
             self.set_player_color(game.state)
             tile.contents.append(u)#add the object to the tile
         elif spawn_what == 'Wall':
             x, y = tile.position
-            u=unit_class(0, 0, 32, 32, tile=tile) #make a unit of that class
+            u=unit_class(tile=tile) #make a unit of that class
             tile.contents.append(u)#add the object to the tile
 
 
@@ -121,7 +121,7 @@ class Creature(object):
     STOPPED     = 0 
     MOVING      = 1
     
-    def __init__(self, centerx, centery, width, height, tile=None, color=None, direction = 1, speed = 1, bug_map = None, bug_spawn_map = None):
+    def __init__(self, centerx=0, centery=0, width=32, height=32, tile=None, color=None, direction = 1, speed = 1, bug_map = None, bug_spawn_map = None):
 
             self.name       = None #Figure out If I need this
             self.beats      = None
@@ -134,16 +134,23 @@ class Creature(object):
             self.beginingy     = None
             self.destinationx  = None
             self.destinationy  = None
-            self.centerx        = centerx
-            self.centery        = centery
-            self.width          = width#This number will most likely be derived from images passed in? 
-            self.height         = height
             self.tile           = tile #the tile this bug is standing on.  If None, it's floating in limbo
             self.last_tile      = tile #the last tile this bug was standing on.  Used to prevent u-turns.
             self.sprite         = pyglet.sprite.Sprite(self.images[0], 0, 0, batch=self.bug_batch)
+            self.width          = self.sprite.width
+            self.height         = self.sprite.height
             x, y                = self.tile.position
-            self.sprite.x       = x*32
-            self.sprite.y       = y*32
+            if centerx: 
+                self.centerx=centerx                 
+            else: 
+                self.centerx = (x+0.5)*game.map.tilesize
+            if centery: 
+                self.centery=centery 
+            else: 
+                self.centery = (y+0.5)*game.map.tilesize    
+            self.sprite.x       = self.left#centerx
+            self.sprite.y       = self.bottom#centery         
+
             self.color          = color
             self.bug_map        = bug_map
 
@@ -166,7 +173,23 @@ class Creature(object):
         if len(self.images) > 1:
             self.image_index = (self.image_index+1)%len(self.images)
             self.sprite.image = self.images[self.image_index]
-            
+
+
+    @property
+    def left(self):
+        return self.centerx - (self.width // 2)
+
+    @property
+    def right(self):
+        return self.centerx +  (self.width // 2)
+        
+    @property
+    def top(self):
+        return self.centery + (self.height // 2)
+
+    @property
+    def bottom(self):
+        return self.centery -  (self.height // 2)            
             
     def die(self):
         if not self.alive:
@@ -191,28 +214,12 @@ class Bug(Creature):
         #adujust for centered anchor point (for rotation)
         self.ai=ai.Mind()
         
-        self.sprite.x += self.sprite.width // 2
-        self.sprite.y += self.sprite.height // 2
+        #self.sprite.x += self.sprite.width // 2
+        #self.sprite.y += self.sprite.height // 2
         self.alive = True
         
     def get_images(self):
         return game.image_map['Bug']
-
-    @property
-    def left(self):
-        return self.centerx - (self.width // 2)
-
-    @property
-    def right(self):
-        return self.centerx +  (self.width // 2)
-        
-    @property
-    def top(self):
-        return self.centery + (self.height // 2)
-
-    @property
-    def bottom(self):
-        return self.centery -  (self.height // 2)
 
     def collide_neighbors(self):
         collidables = []
@@ -242,8 +249,8 @@ class Bug(Creature):
             if not (self.time > duration):
                 self.centerx 		= self.linear_tween(self.time, duration, changex, self.beginingx)
                 self.centery 		= self.linear_tween(self.time, duration, changey, self.beginingy)
-                self.sprite.x		= self.right
-                self.sprite.y		= self.top
+                self.sprite.x		= self.centerx#right
+                self.sprite.y		= self.centery#top
                 if isinstance(self, Player):
                     game.map.set_center( self.centerx, self.centery)
             else:
@@ -279,12 +286,15 @@ class Bug(Creature):
 
     def move_to_dest(self, dest):
         '''Function calls linear tween and makes bugs move nicely. Not implemented yet'''
-        x, y   = self.tile.position
+        tile_width=game.map.tilesize
+        tile_height=game.map.tilesize
+        wideload=1.0*self.sprite.width/tile_width
+        highload=1.0*self.sprite.height/tile_height
         x1, y1 = dest.position
-        self.destinationx = x1*32
-        self.destinationy = y1*32
-        self.beginingx    = x*32
-        self.beginingy    = y*32
+        self.destinationx = (x1+wideload/2+(1-wideload)*random.random())*tile_width
+        self.destinationy = (y1+highload/2+(1-highload)*random.random())*tile_height
+        self.beginingx    = self.centerx
+        self.beginingy    = self.centery
         self.time = 0
         self.last_tile = self.tile
         self.tile = dest
