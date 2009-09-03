@@ -584,6 +584,10 @@ class Player(Bug):
         if self.color:
                 #print "set color p"
                 self.sprite.color   = self.color
+                
+        off = game.map.window_offset
+        w, h = game.map.window.get_size()
+        game.map.window_offset = (off[0]-self.centerx+w/2, off[1]-self.centery+h/2)
 
 
     def move(self): #the player doesn't move in the normal way (for a bug)
