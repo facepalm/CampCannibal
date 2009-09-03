@@ -2,11 +2,9 @@
 #reanimate.py
 
 #to do
-    # add labels to organ slots in monster chest cavity
     # replace instruction line with warning about aging organs.
         #generic tips list
     #add organ aging
-    #8 point "art by Miriam Sherry"
 
 #creep
     #squashing and stretching organs when in body.
@@ -39,8 +37,12 @@ monsterOrgans = {'lungs':None, 'heart':None, 'liver':None, 'kidneys':None}; #fea
 monsterOrganSlots = {'lungs':None, 'heart':None, 'liver':None, 'kidneys':None}; #features
 monsterOrganLocs = {'lungs':(185,385), 'heart':(290,385), 
                     'liver':(185,280), 'kidneys':(290,280)};
+monsterOrganLabels = [];
+artistAppreciation = None;
 
-
+tips = [    "To revive creature, drag in a set of organs.",
+            "Organs weaken every day. Dead ones are discarded.",
+            ];
 
 def AnimateOrganPlacement(dt,args,kwargs):
     if (len(organsOnTheMarch) == 0): return;
@@ -64,13 +66,13 @@ def AnimateOrganPlacement(dt,args,kwargs):
 def TransitionIn(organsGathered, monster):
     global organsInLab
     
-    #AgeOrgans(); #unused organs lose one bonus every day. remove organs with bonus < 0.
+    AgeOrgans(); #unused organs lose one bonus every day. remove organs with bonus < 0.
     organsInLab += organsGathered;
     InitScreen(monster);
     pass
 
 def InitScreen(monster):
-    global monsterOnSlab,nxtBtn,toReviveStr,toNextNightStr
+    global monsterOnSlab,nxtBtn,toReviveStr,toNextNightStr, artistAppreciation
     
     monsterOnSlab = knFeatures.FtreSprite("onSlab",0,0);
     for key in monsterOrganLocs:
@@ -79,8 +81,11 @@ def InitScreen(monster):
         f.SetVisible(False);
         f.lineThickness = 2.0;
         monsterOrganSlots[key] = f;
+        f = knFeatures.FtreString(key.upper(),y,x,fSize=9);
+        monsterOrganLabels.append(f);
     
-    toReviveStr = knFeatures.FtreString("To revive creature, drag in a set of organs.",450,235,fSize=12);
+    tip = tips.pop(0) if len(tips) else "";
+    toReviveStr = knFeatures.FtreString(tip,450,235,fSize=12);
     toNextNightStr = knFeatures.FtreString("When ready to rampage, press 'It's Alive'.",450,235,fSize=16);
     toNextNightStr.SetVisible(False);
     
@@ -103,6 +108,8 @@ def InitScreen(monster):
     knFeatures.FtreString("Health Parts",450,630,fSize=12,fFont='Arial Bold');
     knFeatures.FtreString("Strength Parts",250,630,fSize=12,fFont='Arial Bold');
     knFeatures.FtreString("Toughness Parts",50,630,fSize=12,fFont='Arial Bold');
+    
+    artistAppreciation = knFeatures.FtreString("art by Miriam Sherry", 12, 740, fSize=8);
     
     for o in organsInLab:
         AddOrgan(o[0],o[1],o[2]);
@@ -256,14 +263,28 @@ def BonusImage(f,bonus):
     render = knFonts.RenderStr('+' + str(bonus), size=18, font='Arial Bold');
     return render;
     
+def AgeOrgans():
+#    deadOrgans = [];
+#    for o in organsInLab:
+#        if (o[1] == 0):
+#            deadOrgans.append(o);
+#            continue;
+#        o[1] -= 1;
+#    for o in deadOrgans:
+#        organsInLab.remove(o);
+    pass
+    
+    
     
 def NextNight(f):
     #kill everything!!!
-    global monsterAttrStrs, monsterOrgans, monsterOrganSlots,organBins
+    global monsterAttrStrs, monsterOrgans, monsterOrganSlots,organBins, monsterOrganLabels, artistAppreciation
     
     monsterAttrStrs = {'S':None, 'T':None, 'H':None}; #features
     monsterOrgans = {'lungs':None, 'heart':None, 'liver':None, 'kidneys':None}; #features
     monsterOrganSlots = {'lungs':None, 'heart':None, 'liver':None, 'kidneys':None}; #features
+    monsterOrganLabels = [];
+    artistAppreciation = None;
     organBins = {};
     
     knFeatures.allFeatures = [];

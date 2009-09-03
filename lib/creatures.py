@@ -662,6 +662,7 @@ class Frank(Bug):
         self.move_x=0
         self.move_y=0
         self.speed = 1
+        self.attributes = {'S':2, 'T':1, 'H':10}; #Strength, Toughness, Health
         self.state = self.STOPPED
         #self.sprite.color = color#(0, 0, 0)
         if self.color:
