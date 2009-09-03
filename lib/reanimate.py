@@ -41,7 +41,7 @@ monsterOrganPulses = {'lungs':None, 'heart':None, 'liver':None, 'kidneys':None};
 monsterOrganLabels = [];
 artistAppreciation = None;
 
-tips = [    "To revive creature, drag in a set of organs.",
+tips = [    "To reanimate creature, drag in a set of organs.",
             "Organs weaken every day. Dead ones are discarded.",
             ];
 
@@ -94,8 +94,8 @@ def InitScreen(monster):
         monsterOrganLabels.append(f);
     
     tip = tips.pop(0) if len(tips) else "";
-    toReviveStr = knFeatures.FtreString(tip,450,235,fSize=12);
-    toNextNightStr = knFeatures.FtreString("When ready to rampage, press 'It's Alive'.",450,235,fSize=16);
+    toReviveStr = knFeatures.FtreString(tip,20,235,fSize=12);
+    toNextNightStr = knFeatures.FtreString("When ready to rampage, press 'It's Alive'.",20,235,fSize=16);
     toNextNightStr.SetVisible(False);
     
     y = 150;
