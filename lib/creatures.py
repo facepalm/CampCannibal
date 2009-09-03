@@ -326,7 +326,10 @@ class Bug(Creature):
     def get_nearby_units(self,friend=False):
         collidables = []
         collidables.extend(self.tile.contents)
-        collidables = [i for i in collidables if (self != i and ((isinstance(self, Frank) and isinstance(i, Bug)) or (isinstance(self, Bug) and isinstance(i, Frank))))]
+        collidables = [i for i in collidables if (self != i and 
+                         not isinstance(self, Player) and not isinstance(i, Player) and  
+                        ((isinstance(self, Frank) and isinstance(i, Bug)) or 
+                         (isinstance(self, Bug) and isinstance(i, Frank))))]
         return collidables
     
     def collide_nearby(self):
@@ -659,12 +662,22 @@ class Player(Bug):
 
     def get_images(self):
         return game.image_map['Player']
+        
+    def check_blocked(self,other):
+        if self==other: #if we are the other bug as well, we don't need to bother
+            return False
+        if isinstance(other, Wall):#walls block us from moving
+            return True #There is a blockage        
+        return False #there is NOT a blockage with whatever object this is
 
 class Frank(Bug):
     def __init__(self, *args, **kwargs):#centerx, centery, width, height, tile=None, color=None, direction = 1, velocity = 1):
         super(Frank, self).__init__(*args, **kwargs)
         self.move_x=0
         self.move_y=0
+        self.health= 100
+        self.strength=10
+        self.toughness=10
         self.speed = 1
         self.attributes = {'S':2, 'T':1, 'H':10}; #Strength, Toughness, Health
         self.state = self.STOPPED
