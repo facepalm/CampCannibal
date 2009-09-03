@@ -109,6 +109,13 @@ class Map(object):
     def random_tile(self):
         return self.grid[random.randint(0, self.width-1)][random.randint(0, self.height-1)]
 
+    def tile_from_coords(self,coords):
+        try:
+            return self.grid[int(coords[0])/self.tilesize][int(coords[1])/self.tilesize]
+        except:
+            return None
+
+
     def on_key_press(self, *args):
         symbol, mods = args
         if mods & pyglet.window.key.MOD_SHIFT:

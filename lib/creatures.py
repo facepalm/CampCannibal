@@ -17,7 +17,7 @@ class Spawn():
         #Map string names to classes
         self.spawn_map   = {
           'Portal'  : Portal,
-          'Door'    : Door,
+          'Fire'    : Fire,
           'Wall'    : Wall,
           'Bug'     : Bug,
           'Player'  : Player,
@@ -108,6 +108,9 @@ class Spawn():
         elif spawn_what == 'Wall':
             u=unit_class(tile=tile) #make a unit of that class
             tile.contents.append(u)#add the object to the tile
+        elif spawn_what == 'Bug':
+            u=unit_class(tile=tile) #make a unit of that class
+            tile.contents.append(u)#add the object to the tile
         elif spawn_what == 'Frank':
             u=unit_class(tile=tile) #make a unit of that class
             tile.contents.append(u)#add the object to the tile
@@ -133,6 +136,11 @@ class Creature(object):
             self.image_index    = 0
             self.direction      = direction #Probably should make this an x/y vector but then again, this is a grid that allows for no diagonal movement
             self.speed          = speed
+            self.attacking = False
+            self.health         = 10
+            self.toughness      = 1
+            self.strength       = 1
+            self.dt= 0.00001
             self.beginingx     = None
             self.beginingy     = None
             self.destinationx  = None
@@ -201,24 +209,26 @@ class Creature(object):
         self.state = self.STOPPED
         self.spritex = self.sprite.x
         self.spritey = self.sprite.y
-        game.score += self.bug_map['Score']
-        print "Current score: ", game.score
+        try:
+            self.tile.contents.remove(self)
+        except:
+            print "Dead creature already removed"
+        #game.score += self.bug_map['Score']
+        #print "Current score: ", game.score
         try:#Prevent error on double deletion
             if not isinstance(self,Player):
                 self.sprite.delete()            
         except:
             print 'Double delete caught'
+        game.state.remove_handlers(self)
+
     
 class Bug(Creature):
     """This class represent a bug. Player object will be a subclass of bug"""
 
     def __init__(self, *args, **kwargs):
         super(Bug, self).__init__(*args, **kwargs)
-        #adujust for centered anchor point (for rotation)
         self.ai=ai.Mind()
-        
-        #self.sprite.x += self.sprite.width // 2
-        #self.sprite.y += self.sprite.height // 2
         self.alive = True
         
     def get_images(self):
@@ -227,22 +237,20 @@ class Bug(Creature):
     def collide_neighbors(self):
         collidables = []
         map(lambda x: collidables.extend(x.contents), self.tile.neighbors())
-        collidables = [i for i in collidables if (isinstance(i, Player)  or isinstance(i, Bug))]
+        collidables = [i for i in collidables if (isinstance(i, Frank)  or isinstance(i, Fire))]
         for c in collidables:
             if ((self.left >= c.left and self.left < c.right) or (self.right > c.left and self.right <= c.right)) and \
                 ((self.top > c.bottom and self.top <= c.top) or (self.bottom < c.top and self.bottom >= c.bottom)):
                     self.resolve_collision(c)
-                    #print 'bug collided', c
+                    #print 'bug collided', c'''
 
-    def on_update(self, dt):
+    def on_update_old(self, dt):
         '''Update sprites postion/state'''
         if not self.alive:
             return
         self.collide_neighbors()    
         if self.state != self.MOVING:
             #maybe check if we're still alive at this point
-            if not isinstance(self,Player) and random.random() < 0.02:
-                self.warp_to_random_tile()
             self.move()            
         if self.state == self.MOVING:
             self.time += 1
@@ -258,10 +266,76 @@ class Bug(Creature):
                     game.map.set_center( self.centerx, self.centery)
             else:
                 self.state = self.STOPPED
+
+    def on_update(self, dt):   
+        '''Update sprites postion/state'''
+        if not self.alive:
+            return
+        
+        self.dt=dt   
+        if self.health <= 0:
+            self.die()
+            return
+
+        '''if len(self.images) > 1:
+            self.image_index = (self.image_index+1)%len(self.images)
+            self.sprite.image = self.images[self.image_index]'''    
+
+        if self.state == self.STOPPED:
+            self.idle()            
+        elif self.state == self.MOVING:            
+            self.time += 1
+            changex             = self.destinationx - self.beginingx
+            changey             = self.destinationy - self.beginingy
+            duration    = math.sqrt( (changex * changex) + (changey * changey))//self.speed
+            if not (self.time > duration):
+                self.centerx            = self.linear_tween(self.time, duration, changex, self.beginingx)
+                self.centery            = self.linear_tween(self.time, duration, changey, self.beginingy)
+                self.sprite.x           = self.centerx#right
+                self.sprite.y           = self.centery#top
+                ctile=game.map.tile_from_coords((self.centerx,self.centery))
+                if ctile and self.tile != ctile:
+                    #move to new tile
+                    if self in self.tile.contents:
+                         self.tile.contents.remove(self)#Remove from current tile                    
+                    ctile.contents.append(self)#add to the dest tile
+                    self.last_tile = self.tile
+                    self.tile=ctile
+            else:
+                self.state = self.STOPPED
+            #if random.random() <= 0.02:
+            #    self.state=self.STOPPED
+        if self.attacking:
+            self.collide_nearby() 
+                
         if self.time % 5 == 0 and self.state != self.STOPPED:
             self.next_image()
-        #if not isinstance(self,Player) and random.random() < 0.0005:
-        #    self.die()
+    
+    def idle(self):
+        #find an enemy to move to        
+        u=self.get_nearby_units()
+        if len(u) > 0:
+            u=random.choice(u)
+            self.move_to_pt((u.centerx,u.centery))
+            self.attacking = True
+        else:
+            self.move()  
+            self.attacking = False
+        self.collide_nearby() 
+        
+    def get_nearby_units(self,friend=False):
+        collidables = []
+        collidables.extend(self.tile.contents)
+        collidables = [i for i in collidables if (self != i and ((isinstance(self, Frank) and isinstance(i, Bug)) or (isinstance(self, Bug) and isinstance(i, Frank))))]
+        return collidables
+    
+    def collide_nearby(self):
+        for c in self.tile.contents:
+            if ((self.left >= c.left and self.left < c.right) or (self.right > c.left and self.right <= c.right)) and \
+                ((self.top > c.bottom and self.top <= c.top) or (self.bottom < c.top and self.bottom >= c.bottom)):
+                    self.resolve_collision(c)
+       
+        
 
     def warp_to_random_tile(self):
         old_t = self.tile 
@@ -275,6 +349,7 @@ class Bug(Creature):
         self.tile = t
 
     def move(self):
+        
         all_neighbors=self.tile.neighbors() #get surrounding squares
         valid_neighbors=[]
         if self.last_tile in all_neighbors: #remove the most recent square
@@ -283,9 +358,17 @@ class Bug(Creature):
             if not self.check_occlusion(n):
                 valid_neighbors.append(n)   
         if len(valid_neighbors) >= 1: #do we have at least one square to move to?
-            self.move_to_tile( self.ai.choose_tile(valid_neighbors) ) #pick tile at random to move into, brads AI of doom is going to use this: python mouse brain scanning at work!
+            self.move_to_tile( self.ai.choose_tile(valid_neighbors) )
         else: #we must be trapped.  
             self.last_tile=self.tile #Update last_tile to reflect this
+
+    def move_to_pt(self,dest):
+        self.destinationx = dest[0]
+        self.destinationy = dest[1]
+        self.beginingx    = self.centerx
+        self.beginingy    = self.centery
+        self.time = 0
+        self.state = self.MOVING   
 
     def move_to_dest(self, dest):
         '''Function calls linear tween and makes bugs move nicely. Not implemented yet'''
@@ -341,22 +424,13 @@ class Bug(Creature):
                 return False
             else:
                 return True
-        if isinstance(self, Player) and isinstance(other, Door):#Doors block us from moving, I need a check for player color
-            if self.color == other.color:
-
-                game.state.state = 'GameOver'
-                print "Game over man"
-                return False
-            else:
-                return True
-            return True #There is a blockage
-        if isinstance(other, Door):
+        if isinstance(other, Fire):
             return True
         if isinstance(other, Wall):#walls block us from moving
             return True #There is a blockage
-        if isinstance(self, Player) and isinstance(other, Bug): #player can hit bugs
+        if isinstance(self, Frank) and isinstance(other, Bug): #frank can hit bugs
             return False
-        if isinstance(self, Bug) and isinstance(other, Player): #bugs can hit player
+        if isinstance(self, Bug) and isinstance(other, Frank): #bugs can hit frank
             return False
         if isinstance(self, Bug) and isinstance(other, Bug): #bugs block other bugs
             return True
@@ -366,31 +440,30 @@ class Bug(Creature):
         '''Function for handling non-blocking collisions (attacks and stuff)'''
         if self==other: #possibly useful for masochism-based attacks
             return
-        if isinstance(self, Player) and isinstance(other, Bug): #player can hit bugs            
+        if isinstance(self, Frank) and isinstance(other, Bug): #player can hit bugs            
             #Color-based damage
             self.resolve_collision(other)
-        if isinstance(self, Bug) and isinstance(other, Player): #bugs can hit player
+        if isinstance(self, Bug) and isinstance(other, Frank): #bugs can hit player
             #color-based damage
             self.resolve_collision(other)
+            
+    '''def resolve_collision(self,other):
+        #attack collisions
+        if not other.alive:
+            return
+        other.health -= 1.0*self.strength/other.toughness  '''
             
     def resolve_collision(self,other):
         if not other.alive:
             return
-        if other.name in self.beats:
-            #they die
-            if isinstance(self, Player):# player_color, color1, color2):
-                game.state.dispatch_event('on_set_player_color', other.bug_map['Color'],  game.state.get_color_bug(other.bug_map['Beats'][0]), game.state.get_color_bug(other.bug_map['Beats'][1]))
-                print "Bug dies! Change player color to", self.bug_map['Color'], " Beats: ",self.bug_map['Beats'][0], " and: ", self.bug_map['Beats'][1]
-                other.die()
-                self.bug_map = other.bug_map
-                self.beats  = self.bug_map['Beats']
-        #elif self.name in other.beats:
-        elif other.color != self.color and isinstance(self, Player):
-            #print other.color, self.color
-            #I die
-            #if isinstance(self, Player):
-            self.die()
-            #print "Player dies!"    
+        if self != other and ((isinstance(self, Frank) and isinstance(other, Bug)) or (isinstance(self, Bug) and isinstance(other, Frank))):
+            #melee scuffle
+            self.state=self.STOPPED
+            other.state=other.STOPPED
+            other.attacking=True
+            other.health -= 1.0*self.strength/other.toughness
+            pass
+            
             
     def set_rotation(self):
         """Set sprite's rotation, based off of our current and last tile"""
@@ -413,7 +486,7 @@ class Bug(Creature):
         #x, y = self.tile.position        
         #game.effects.draw_splat(x*32+16, y*32+16, color=(0, 255, 0))        
         game.number_of_bugs -= 1
-        self.bug_map['Count'] -= 1
+        #self.bug_map['Count'] -= 1
         self.draw_death()
         self.deathsound()
         if isinstance(self,Player):
@@ -456,9 +529,9 @@ class Wall(Creature):
     def move(self): #walls don't move
         return False
 
-class Door(Creature):
+class Fire(Creature):
     def __init__(self, *args, **kwargs):
-        super(Door, self).__init__(*args, **kwargs)
+        super(Fire, self).__init__(*args, **kwargs)
         self.color          = (255, 0, 0)
         self.sprite.color   = self.color
 
@@ -511,17 +584,6 @@ class Player(Bug):
         if self.color:
                 #print "set color p"
                 self.sprite.color   = self.color
-
-
-    def collide_neighbors(self):
-        collidables = []
-        map(lambda x: collidables.extend(x.contents), self.tile.neighbors())
-        collidables = [i for i in collidables if not (isinstance(i, Wall) or isinstance(i, Door) or isinstance(i, Player) or isinstance(i, Portal))] #This needs to be refactored -htormey
-        for c in collidables:
-            if ((self.left >= c.left and self.left < c.right) or (self.right > c.left and self.right <= c.right)) and \
-                ((self.top > c.bottom and self.top <= c.top) or (self.bottom < c.top and self.bottom >= c.bottom)):
-                    self.resolve_collision(c)
-                    #print 'player collided', c
 
 
     def move(self): #the player doesn't move in the normal way (for a bug)
@@ -599,24 +661,12 @@ class Frank(Bug):
         super(Frank, self).__init__(*args, **kwargs)
         self.move_x=0
         self.move_y=0
-        self.speed = 4
+        self.speed = 1
         self.state = self.STOPPED
         #self.sprite.color = color#(0, 0, 0)
         if self.color:
                 #print "set color p"
-                self.sprite.color   = self.color
-
-
-    def collide_neighbors(self):
-        collidables = []
-        map(lambda x: collidables.extend(x.contents), self.tile.neighbors())
-        collidables = [i for i in collidables if not (isinstance(i, Wall) or isinstance(i, Door) or isinstance(i, Player) or isinstance(i, Portal))] #This needs to be refactored -htormey
-        for c in collidables:
-            if ((self.left >= c.left and self.left < c.right) or (self.right > c.left and self.right <= c.right)) and \
-                ((self.top > c.bottom and self.top <= c.top) or (self.bottom < c.top and self.bottom >= c.bottom)):
-                    self.resolve_collision(c)
-                    #print 'player collided', c
-        
+                self.sprite.color   = self.color    
     
     def draw_death(self):
         game.effects.draw_splat(self.spritex, self.spritey, color=(255, 0, 0))

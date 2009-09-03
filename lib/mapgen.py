@@ -78,6 +78,10 @@ class mapgen():
         space_tiles=filter(lambda x: x.char == '.',flatten(g))   
         random.choice(space_tiles).char='F'  
         
+        space_tiles=filter(lambda x: x.char == '.',flatten(self.grid)) 
+        for i in range(30):       
+            random.choice(space_tiles).char='b' 
+        
     def quad_grid(self,quad=1):
         '''
         Given a desired grid quandrant, returns that quarter of the total map
