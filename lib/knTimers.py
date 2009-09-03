@@ -81,6 +81,23 @@ class RangeTimer:
         self.pauseTime = None;
         pass
     
+
+class PicketTimer(RangeTimer):
+    def ReadValue(self):
+        ct = time()*1000;
+        if (ct >= self.endTime):
+            RangeTimer.__init__(self, self.totalDuration, self.endValue, self.startValue);
+        return (( (ct-self.startTime) * self.deltaValue) / self.totalDuration) + self.startValue;
+
+
+class CycleTimer(RangeTimer):
+    def ReadValue(self):
+        ct = time()*1000;
+        if (ct >= self.endTime):
+            self.Restart();
+            return self.endValue;
+        return (( (ct-self.startTime) * self.deltaValue) / self.totalDuration) + self.startValue;
+
     
 class AcDcTimer(RangeTimer):
     def __init__(self, duration, startVal, endVal): #assume values are floats.

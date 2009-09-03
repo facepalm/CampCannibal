@@ -37,6 +37,7 @@ monsterOrgans = {'lungs':None, 'heart':None, 'liver':None, 'kidneys':None}; #fea
 monsterOrganSlots = {'lungs':None, 'heart':None, 'liver':None, 'kidneys':None}; #features
 monsterOrganLocs = {'lungs':(185,385), 'heart':(290,385), 
                     'liver':(185,280), 'kidneys':(290,280)};
+monsterOrganPulses = {'lungs':None, 'heart':None, 'liver':None, 'kidneys':None}; #timers
 monsterOrganLabels = [];
 artistAppreciation = None;
 
@@ -45,6 +46,7 @@ tips = [    "To revive creature, drag in a set of organs.",
             ];
 
 def AnimateOrganPlacement(dt,args,kwargs):
+    PulseOrgans();
     if (len(organsOnTheMarch) == 0): return;
     removeList = [];
     
@@ -59,8 +61,15 @@ def AnimateOrganPlacement(dt,args,kwargs):
         f.timerY = None;
         f.timerX = None;
         organsOnTheMarch.remove(f);
+    
     pass
 
+def PulseOrgans():
+    for key in monsterOrganPulses:
+        if (monsterOrgans[key]):
+            val = monsterOrganPulses[key].ReadValue();
+            monsterOrgans[key].image.scale = 1.1 if (val >= 9) else 1.0;
+    pass
 
                     #organ tuple: (organName, bonus, attribute affected)
 def TransitionIn(organsGathered, monster):
@@ -111,6 +120,11 @@ def InitScreen(monster):
     
     artistAppreciation = knFeatures.FtreString("art by Miriam Sherry", 12, 740, fSize=8);
     
+    timings = [300,400,500,600];
+    random.shuffle(timings);
+    for key in monsterOrganPulses:
+        monsterOrganPulses[key] = knTimers.CycleTimer(timings.pop(),0,10);
+        
     for o in organsInLab:
         AddOrgan(o[0],o[1],o[2]);
     
