@@ -8,10 +8,14 @@ import pyglet
 _images = {}
 _image_groups = {}
 _sounds = {}
+#Hack -htormey
+_imageAtlas = None
 
-data_py = os.path.abspath(os.path.dirname(__file__))
-data_dir = os.path.normpath(os.path.join(data_py, '..', 'data'))
-art_dir = os.path.normpath(os.path.join(data_py, '..', 'art'))
+data_py     = os.path.abspath(os.path.dirname(__file__))
+data_dir    = os.path.normpath(os.path.join(data_py, '..', 'data'))
+art_dir     = os.path.normpath(os.path.join(data_py, '..', 'art'))
+atlas_dir   = os.path.normpath(os.path.join(data_py, './example'))
+print "atlas diri ", atlas_dir
 
 def imagepath(filename):
     """Determine the path to a file in the art directory"""
@@ -29,6 +33,13 @@ def load(filename, mode='rb'):
     "mode" is passed as the second arg to open().
     '''
     return open(os.path.join(art_dir, filename), mode)
+
+def loadTextureAtlas():
+    global _imageAtlas
+    #Hack - htormey
+    atlas_file  = atlas_dir + "/action1.bmp"
+    _imageAtlas = pyglet.image.load(atlas_file)
+
 
 def loadimages():
     '''Load all of the images in the data  dir'''

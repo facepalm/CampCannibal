@@ -4,7 +4,7 @@ Map object
 
 import data
 import pyglet
-from creatures import Bug
+from creatures import Bug, Player2
 from pyglet.gl import *
 import game
 import random
@@ -68,6 +68,9 @@ class Map(object):
         Tile.tile_batch.draw()
         EffectsManager.effects_batch.draw()
         Bug.bug_batch.draw()
+        Player2.creature_batch.draw()
+
+        #Add in animation code
 
         glPopMatrix()
         #score_text = "score: " + str(game.score) 
@@ -96,7 +99,7 @@ class Map(object):
             game.state.dispatch_event('on_spawn', 'Wall', tile)#spawn wall
         elif symbol=='b': #generic bug
             game.state.dispatch_event('on_spawn', 'Bug', tile)#spawn bug
-        elif symbol=='F'and not game.state.Frank: #frank
+        elif symbol=='F': #frank
             game.state.dispatch_event('on_spawn', 'Frank', tile)#spawn frank
         elif symbol=='@' and not game.state.player: #unique player
             game.state.dispatch_event('on_spawn', 'Player', tile)#spawn player

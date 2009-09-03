@@ -30,7 +30,9 @@ def init():
     global sounds
     global effects
     global factions
-     
+    #Hack in new animation system -htormey
+    global imageAtlas
+
     score =  0
     number_of_bugs = 0
     window = pyglet.window.Window(width=800,height=600, resizable=True, visible=False)
@@ -40,11 +42,15 @@ def init():
     window.resize(window.width, window.height)
     
     titles.StartTitleScreens(window);
-    
+    #Hack, needs to be be refactored -htormey
+    data.loadTextureAtlas()
     data.loadimages()
     data.loadsounds()
-    images = data._images
-    sounds = data._sounds
+    #Hack -htormey
+    imageAtlas  = data._imageAtlas
+    #print "atlas: ", imageAtlas
+    images      = data._images
+    sounds      = data._sounds
     image_groups = data._image_groups
     #Global that maps images to creatures/objects
     image_map = {
@@ -91,7 +97,6 @@ class GameState(pyglet.event.EventDispatcher):
         self.add_handler(self.spawn)
         self.window = window
         self.player=None
-        self.Frank=None
         window.push_handlers(self)
         pyglet.clock.schedule_interval(self.update, 1.0/60)
         #Set player color
