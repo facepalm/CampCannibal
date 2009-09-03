@@ -113,6 +113,7 @@ class Spawn():
             tile.contents.append(u)#add the object to the tile
         elif spawn_what == 'Frank':
             u=unit_class(tile=tile) #make a unit of that class
+            game.state.Frank=u
             tile.contents.append(u)#add the object to the tile
 
 
@@ -673,6 +674,7 @@ class Player(Bug):
 class Frank(Bug):
     def __init__(self, *args, **kwargs):#centerx, centery, width, height, tile=None, color=None, direction = 1, velocity = 1):
         super(Frank, self).__init__(*args, **kwargs)
+        self.ai=ai.Mind('Random')
         self.move_x=0
         self.move_y=0
         self.health= 100

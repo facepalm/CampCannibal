@@ -91,6 +91,7 @@ class GameState(pyglet.event.EventDispatcher):
         self.add_handler(self.spawn)
         self.window = window
         self.player=None
+        self.Frank=None
         window.push_handlers(self)
         pyglet.clock.schedule_interval(self.update, 1.0/60)
         #Set player color

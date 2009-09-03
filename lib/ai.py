@@ -3,10 +3,12 @@ import game
 import math
 
 class Mind():
-    def __init__(self):
+    def __init__(self,choice=None):
         self.strat_list= ['Random','LazyFollow']
-        
-        self.strat=random.choice(self.strat_list)
+        if choice and choice in self.strat_list:
+            self.strat = choice
+        else:
+            self.strat=random.choice(self.strat_list)
     
     def choose_tile(self,tile_list,fleeing=False):
         if len(tile_list)==0:

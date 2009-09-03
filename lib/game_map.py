@@ -96,7 +96,7 @@ class Map(object):
             game.state.dispatch_event('on_spawn', 'Wall', tile)#spawn wall
         elif symbol=='b': #generic bug
             game.state.dispatch_event('on_spawn', 'Bug', tile)#spawn bug
-        elif symbol=='F': #frank
+        elif symbol=='F'and not game.state.Frank: #frank
             game.state.dispatch_event('on_spawn', 'Frank', tile)#spawn frank
         elif symbol=='@' and not game.state.player: #unique player
             game.state.dispatch_event('on_spawn', 'Player', tile)#spawn player
