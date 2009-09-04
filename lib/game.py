@@ -62,19 +62,18 @@ def init():
         'Map' : image_names['background/background01'],
         'Player' : image_names['agents/player'],
         'Splats' : image_names['effects/splat'],
-        'Burrow' : image_names['effects/burrow'],
         'Monster': image_names['agents/Monster01'],
+        'Burrow' : image_names['effects/burrow'],
     }
-    #Global that maps images to creatures/objects
     image_map = {
         'Door': image_groups['walls/door01'],
         'Wall': image_groups['walls/wall01'],
+        'Monster' : image_groups['agents/Monster01'],
         'Bug' : image_groups['agents/bug01'],
         'Map' : image_groups['background/background01'],
         'Player' : image_groups['agents/player'],
         'Splats' : image_groups['effects/splat'],
         'Burrow' : image_groups['effects/burrow'],
-        'Monster': image_groups['agents/Monster01'],
     }
     state = GameState(image_map = image_map) #Filthy fix this later
     effects = EffectsManager()

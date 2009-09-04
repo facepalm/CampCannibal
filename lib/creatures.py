@@ -607,26 +607,16 @@ class Creature2(object):
             self.tile           = tile #the tile this bug is standing on.  If None, it's floating in limbo
             self.last_tile      = tile #the last tile this bug was standing on.  Used to prevent u-turns.
             #New
-            #Internal image map stuff this needs to refactored -htormey
-            sprite_set_x        = 0
-            sprite_set_y        = 26
-            sprite_set_height   = 40
-            sprite_set_width    = 540
-            sprite_set_rows     = 1
-            sprite_set_cols     = 16
-            sprite_width        = 34
-            sprite_height       = 34
-            grid                = pyglet.image.ImageGrid(game.imageAtlas.get_region(sprite_set_x, sprite_set_y, sprite_set_width, sprite_set_height), sprite_set_rows, sprite_set_cols, sprite_width, sprite_height)
-            animation           = pyglet.image.Animation.from_image_sequence(grid.get_texture_sequence(), 0.1, True )
-            self.sprite = animatedsprite.AnimatedSprite(animation, 0, 0, batch=self.creature_batch)
+            animation           = pyglet.image.Animation.from_image_sequence(game.image_map['Monster'], 0.3, True )
+            self.sprite = animatedsprite.AnimatedSprite(animation, 0, 0, batch=self.creature_batch, file_names=game.image_name_map['Monster'])
             #Left Sprite set
-            self.sprite.add_lookup( [0, 8] )
+            self.sprite.add_pic_name_look_up(["Monster_Left1.png", "Monster_Left2.png"])
             #Right sprite set
-            self.sprite.add_lookup( [1, 9] )
+            self.sprite. add_pic_name_look_up(["Monster_Right1.png","Monster_Right2.png"])
             #Up sprite set
-            self.sprite.add_lookup( [2, 11] )
+            self.sprite. add_pic_name_look_up(["Monster_Up1.png", "Monster_Up2.png"])
             #Down sprite set
-            self.sprite.add_lookup( [5, 13] )
+            self.sprite.add_pic_name_look_up(["Monster_Down1.png", "Monster_Down2.png"])
             self.sprite.set_active_lookup(4)
             #New
             #self.sprite         = self.get_sprite()#= pyglet.sprite.Sprite(self.images[0], 0, 0, batch=self.bug_batch)
