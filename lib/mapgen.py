@@ -37,7 +37,6 @@ class mapgen():
             i=0
             for ll in list(line):
                 if ll != ' ' and ll != '\n':
-                    print i,j
                     self.grid[i][j].char=ll
                     i += 1
             j += 1
