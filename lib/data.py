@@ -7,6 +7,7 @@ import pyglet
 
 _images = {}
 _image_groups = {}
+_image_names = {}
 _sounds = {}
 #Hack -htormey
 _imageAtlas = None
@@ -43,7 +44,9 @@ def loadTextureAtlas():
 
 def loadimages():
     '''Load all of the images in the data  dir'''
+    global _image_names
     global _image_groups
+
     targets = os.listdir(art_dir)
     targets = [i for i in targets if i !='.svn' and os.path.isdir( os.path.join(art_dir, i))]
     for t in targets:
@@ -51,9 +54,11 @@ def loadimages():
         spritegroups = [i for i in spritegroups if i !='.svn' and os.path.isdir( os.path.join(art_dir, t, i))]
         for s in spritegroups:
             rotate = (t == 'agents') or (t == 'effects')
-            images = [i for i in os.listdir( os.path.join(art_dir, t, s)) if i.endswith('.png')]
-            images = [image(os.path.join(t, s, i), rotate) for i in images]
+            image_names = [i for i in os.listdir( os.path.join(art_dir, t, s)) if i.endswith('.png')]
+            images = [image(os.path.join(t, s, i), rotate) for i in image_names]
             _image_groups["%s/%s"%(t, s)] = images
+            _image_names["%s/%s"%(t, s)] = image_names
+
 
 def image(filename, rotate=False):
     '''Return an image loaded from the data directory
