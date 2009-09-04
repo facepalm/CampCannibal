@@ -13,15 +13,26 @@ class AnimatedSprite(pyglet.sprite.Sprite):
                          blend_dest=pyglet.gl.GL_ONE_MINUS_SRC_ALPHA,
                          batch=None,
                          group=None,
-                         usage='dynamic'):
+                         usage='dynamic',
+                         file_names=None):
         pyglet.sprite.Sprite.__init__(self, img, x, y, blend_src, blend_dest, batch, group, usage)
 
         self._paused = False
         self._range = (0, 1)
-        print "Length animation frames: ", len(self._animation.frames)
+        #print "Length animation frames: ", len(self._animation.frames)
         # frame lookup table
         self._frame_lookup = [ range(0, len(self._animation.frames)) ]
         self._current_lookup_index = 0
+        self.look_up_map = {}
+        if file_names is not None:
+            #Map the picture list to file name 
+            self.file_names = file_names
+            print [f for f in self.file_names]
+            i = 0 # There is a nicer way of doing this  with list compres -htormey
+            for n in self.file_names:
+                self.look_up_map[n] = i
+                i += 1
+            print self.look_up_map
 
     def _animate(self, dt):
         self._frame_index += 1
@@ -76,6 +87,19 @@ class AnimatedSprite(pyglet.sprite.Sprite):
         if index >= 0 or index < len(self._frame_lookup):
             self._current_lookup_index = index
             self._frame_index = 0
+
+    def add_pic_name_look_up(self, translate_list):
+        list = []
+        #Translate image names into their index
+        for l in translate_list:
+            if l in self.look_up_map:
+                list.append(self.look_up_map[l])
+        print list, " <- list"
+        if len(list) > 0:
+            self._frame_lookup.append(list)
+            self.set_loop(0, len(list))
+        else:
+            return false
 
     def add_lookup(self, list):
         self._frame_lookup.append(list)

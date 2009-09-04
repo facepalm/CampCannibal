@@ -1,3 +1,4 @@
+import os
 import animatedsprite
 #from animate2 import AnimatedSprite
 import pyglet
@@ -5,41 +6,37 @@ from pyglet.window import key
 
 window = pyglet.window.Window()
 sprite_sheet = pyglet.image.load('action1.bmp')
-sprite_set_x        = 0
-sprite_set_y        = 26#40
-sprite_set_height   = 40#346
-sprite_set_width    = 540
-sprite_set_rows     = 1
-sprite_set_cols     = 16
-sprite_width        = 34
-sprite_height       = 34
 '''
-res = pyglet.image.load('test_frames.png')
-grid = pyglet.image.ImageGrid(res.get_region(0,7*32,32*8,32), 1, 8, 32, 32)
-animation = pyglet.image.Animation.from_image_sequence(grid.get_texture_sequence(), 0.1, True )
-'''
-grid                = pyglet.image.ImageGrid(sprite_sheet.get_region(sprite_set_x, sprite_set_y, sprite_set_width, sprite_set_height), sprite_set_rows, sprite_set_cols, sprite_width, sprite_height)
-#Class Method from_image_sequence(cls, sequence, period, loop=True)
+grid                = pyglet.image.ImageGrid(game.imageAtlas.get_region(sprite_set_x, sprite_set_y, sprite_set_width, sprite_set_height), sprite_set_rows, sprite_set_cols, sprite_width, sprite_height)
 animation           = pyglet.image.Animation.from_image_sequence(grid.get_texture_sequence(), 0.1, True )
+self.sprite = animatedsprite.AnimatedSprite(animation, 0, 0, batch=self.creature_batch)
+img = pyglet.image.load(imagepath(filename))
+images = [i for i in os.listdir( os.path.join(art_dir, t, s)) if i.endswith('.png')]
+'''
+data_py     = os.path.abspath(os.path.dirname(__file__))
+picture_dir   = os.path.normpath(os.path.join(data_py, '../../art/agents/Monster01/'))
+image_names = [i for i in os.listdir(picture_dir) if i.endswith('.bmp')]
+images = [pyglet.image.load(os.path.join(picture_dir, i)) for i in image_names]
 
+animation           = pyglet.image.Animation.from_image_sequence(images, 0.3, True )
 print "Number of animation frames created: ", len(animation.frames) 
-#sprite2 = animatedsprite.AnimatedSprite(animation, 0, 0)
-#sprite2.add_lookup( [0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,5,6,7] )
 
-#sprite = pyglet.sprite.Sprite(animation)
-sprite = animatedsprite.AnimatedSprite(animation, 0, 0)
-#sprite.add_lookup( [0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,5,6,7] )
+sprite = animatedsprite.AnimatedSprite(animation, 0, 0, file_names=image_names)
 #Left Sprite set
-sprite.add_lookup( [0, 8] )
+sprite.add_pic_name_look_up(["Monster_Left1.bmp", "Monster_Left2.bmp"])
+#sprite.add_lookup( [0, 1] ) #Maybe want to change this to map to image name?
 #Right sprite set
-sprite.add_lookup( [1, 9] )
+#sprite.add_lookup( [1, 9] )
+sprite. add_pic_name_look_up(["Monster_Right1.bmp","Monster_Right2.bmp"])
 #Up sprite set
-sprite.add_lookup( [2, 11] )
+#sprite.add_lookup( [2, 11] )
+sprite. add_pic_name_look_up(["Monster_Up1.bmp", "Monster_Up2.bmp"])
 #Down sprite set
-sprite.add_lookup( [5, 13] )
+#sprite.add_lookup( [5, 13] )
+sprite.add_pic_name_look_up(["Monster_Down1.bmp", "Monster_Down2.bmp"])
 
 
-sprite.set_active_lookup(4)
+sprite.set_active_lookup(1)
 
 @window.event
 def on_key_press(symbol, mod):
