@@ -22,6 +22,7 @@ def flatten(x):
             result.append(el)
     return result
 
+            
 
 class mapgen():
     def __init__(self,width=32,height=32):
@@ -29,6 +30,21 @@ class mapgen():
         self.height=height
         self.grid = [[simpleTile('#',x,y) for y in range(height)] for x in range(width)]
 
+    def load(self,filename):
+        f = open(filename)
+        j=0       
+        for line in f.readlines():
+            i=0
+            for ll in list(line):
+                if ll != ' ' and ll != '\n':
+                    print i,j
+                    self.grid[i][j].char=ll
+                    i += 1
+            j += 1
+
+    def fill(self):
+        width=self.width
+        height = self.height
         #exit portal
         exitx=random.choice(range(width/2+1,width-1))
         self.grid[exitx][0].char='#'
@@ -103,11 +119,21 @@ class mapgen():
             t=[m[0:self.height/2] for m in t]
             return t
 
-    def print_grid(self):
+    def print_grid(self, filename=None):
+        f=None
+        if filename:
+            f = open(filename,'w')
+
         for y in range(self.height):
             for x in range(self.width):
-                print self.grid[x][y].char,
-            print
+                if filename:
+                    print >>f,self.grid[x][y].char,
+                else:
+                    print self.grid[x][y].char,
+            if filename:
+                print >>f
+            else:
+                print
         
     def is_fully_inside(self,x,y,grid=-1):
         if grid==1 and x>0 and y>0 and x < self.width/2 and y < self.height/2:

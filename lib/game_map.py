@@ -89,7 +89,8 @@ class Map(object):
         '''Fill the map with walls and bugs and stuff.'''
         #print len(mapstr),len(mapstr[0])
         self.mapgrid=mapgen.mapgen(self.width,self.height)
-        self.mapgrid.print_grid()
+        self.mapgrid.load('map.txt')
+        #self.mapgrid.print_grid('map.txt')
         for y in range(self.width):
             for x in range(self.height):
                 self.process_tile(self.grid[x][y],self.mapgrid.grid[x][y].char) #the parser should do this now
