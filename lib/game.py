@@ -77,7 +77,7 @@ def init():
     }
     state = GameState(image_map = image_map) #Filthy fix this later
     effects = EffectsManager()
-    map = Map(32, 32, window,64)
+    map = Map(32, 32, window,32)
     map.populate()
     
     knEvents.FullGameInit(state);
