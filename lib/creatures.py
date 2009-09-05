@@ -161,8 +161,12 @@ class Creature(object):
                 self.centery=centery 
             else: 
                 self.centery = (y+0.5)*game.map.tilesize    
-            self.sprite.x       = self.left#centerx
-            self.sprite.y       = self.bottom#centery         
+            self.sprite.x       = self.centerx
+            self.sprite.y       = self.centery         
+
+            if isinstance(self,Wall):
+                self.sprite.x       = self.left
+                self.sprite.y       = self.bottom
 
             self.color          = color
             self.bug_map        = bug_map
@@ -522,7 +526,7 @@ class Bug(Creature):
          
 class Wall(Creature):
     def __init__(self, *args, **kwargs):
-        kwargs['color'] = None #Don't want a blend color
+        kwargs['color'] = None #Don't want a blend color        
         super(Wall, self).__init__(*args, **kwargs)
 
     def get_images(self):
