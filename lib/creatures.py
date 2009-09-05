@@ -156,13 +156,15 @@ class Creature(object):
             if centerx: 
                 self.centerx=centerx                 
             else: 
-                self.centerx = (x+0.5)*game.map.tilesize
+                self.centerx = (x)*game.map.tilesize
             if centery: 
                 self.centery=centery 
             else: 
-                self.centery = (y+0.5)*game.map.tilesize    
-            self.sprite.x       = self.left#centerx
-            self.sprite.y       = self.bottom#centery         
+                self.centery = (y)*game.map.tilesize    
+            print self.tile.position
+            print self.centerx, self.centery
+            self.sprite.x       = self.centerx
+            self.sprite.y       = self.centery         
 
             self.color          = color
             self.bug_map        = bug_map
