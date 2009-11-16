@@ -99,9 +99,9 @@ class Motion(pyglet.event.EventDispatcher):
     def start(self):
         #For now just assume that we are using seconds.
         self.rewind()
-        pyglet.clock.schedule_interval(self.clock.tick, 1.0)
+        pyglet.clock.schedule_interval(self.clock.tick, 1.0/60)
         #self.clock.schedule_interval(self.on_update, 1.0)
-        self.clock.schedule_interval(self.next_frame, 1.0)
+        self.clock.schedule_interval(self.next_frame, 1.0/60)
         self.dispatch_event('on_motion_started', self)
 
     def rewind(self, t=1):
