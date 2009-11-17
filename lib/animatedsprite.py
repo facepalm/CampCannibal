@@ -19,12 +19,11 @@ class AnimatedSprite(pyglet.sprite.Sprite):
 
         self._paused = False
         self._range = (0, 1)
-        #print "Length animation frames: ", len(self._animation.frames)
-        # frame lookup table
         self._frame_lookup = [ range(0, len(self._animation.frames)) ]
         self._current_lookup_index = 0
         self.look_up_map = {}
         if file_names is not None:
+            print "Filenames"
             #Map the picture list to file name 
             self.file_names = file_names
             print [f for f in self.file_names]
@@ -59,7 +58,7 @@ class AnimatedSprite(pyglet.sprite.Sprite):
 
     def set_loop(self, begin, end):
         ''' Loop between the begin and end frames '''
-
+        print "set look up"
         self.range = (begin, end)
 
         if self._frame_index < begin:
